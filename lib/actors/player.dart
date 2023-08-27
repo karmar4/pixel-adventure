@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
-import 'package:flutter/src/services/keyboard_key.g.dart';
-import 'package:flutter/src/services/raw_keyboard.dart';
+import 'package:flutter/services.dart';
 import 'package:pixel_adventure/pixel_adventure.dart';
 
 enum PlayerState { idle, running }
@@ -11,8 +10,9 @@ enum PlayerDirection { left, right, none }
 
 class Player extends SpriteAnimationGroupComponent
     with HasGameRef<PixelAdventure>, KeyboardHandler {
-  Player({position, required this.main_character}) : super(position: position);
-  String main_character;
+  Player({position, this.mainCharacter = 'Pink Man'})
+      : super(position: position);
+  String mainCharacter;
 
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runningAnimation;
@@ -72,7 +72,7 @@ class Player extends SpriteAnimationGroupComponent
   SpriteAnimation _spriteAnimation(String state, int amount) {
     return SpriteAnimation.fromFrameData(
       game.images
-          .fromCache('Main Characters/$main_character/$state (32x32).png'),
+          .fromCache('Main Characters/$mainCharacter/$state (32x32).png'),
       SpriteAnimationData.sequenced(
         amount: amount,
         stepTime: stepTime,
