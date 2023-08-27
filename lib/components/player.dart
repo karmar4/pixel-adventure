@@ -23,7 +23,7 @@ class Player extends SpriteAnimationGroupComponent
   final double stepTime = 0.05;
 
   double gravity = 9.8;
-  double jumpForce = 460;
+  double jumpForce = 260;
   double terminalVelocity = 300;
   double horizontalMovment = 0;
   double movementSpeed = 100;
@@ -65,17 +65,14 @@ class Player extends SpriteAnimationGroupComponent
     horizontalMovment = 0;
 
     final isLeftKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyA) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowUp);
-    print(keysPressed.toString());
+        keysPressed.contains(LogicalKeyboardKey.arrowLeft);
     final isRightKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyD) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowDown);
-    print(keysPressed.toString());
+        keysPressed.contains(LogicalKeyboardKey.arrowRight);
 
     horizontalMovment += isLeftKeyPressed ? -1 : 0;
     horizontalMovment += isRightKeyPressed ? 1 : 0;
 
     hasJumped = keysPressed.contains(LogicalKeyboardKey.space);
-    print(keysPressed.toString());
 
     return super.onKeyEvent(event, keysPressed);
   }

@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
+import 'package:pixel_adventure/components/background_tile.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
 import 'package:pixel_adventure/components/player.dart';
+import 'package:pixel_adventure/pixel_adventure.dart';
 
-class Level extends World {
+class Level extends World with HasGameRef<PixelAdventure> {
   late TiledComponent level;
 
   Level({required this.levelName, required this.player});
@@ -17,8 +19,42 @@ class Level extends World {
   @override
   FutureOr<void> onLoad() async {
     level = await TiledComponent.load('$levelName.tmx', Vector2.all(16));
+
     add(level);
 
+    _scrollingBackground();
+
+    _spawingObjects();
+
+    _addCollisions();
+
+    return super.onLoad();
+  }
+
+  void _scrollingBackground() {
+    final backgroundLayer = level.tileMap.getLayer('frame');
+    const tileSize = 64;
+
+    final numTilesY = (game.size.y / tileSize).floor();
+    final numTilesX = (game.size.x / tileSize).floor();
+
+    if (backgroundLayer != null) {
+      final backgroundColour =
+          backgroundLayer.properties.getValue('BackgroundColour');
+
+      for (double y = 0; y < game.size.y / numTilesY; y++) {
+        for (double x = 0; x < numTilesX; x++) {
+          final backgroundTile = BackgroundTile(
+            colour: backgroundColour ?? 'Gray',
+            position: Vector2(x * tileSize, y * tileSize - tileSize),
+          );
+          add(backgroundTile);
+        }
+      }
+    }
+  }
+
+  void _spawingObjects() {
     final spawnPointLayer = level.tileMap.getLayer<ObjectGroup>('spawnpoints');
     if (spawnPointLayer != null) {
       for (var spawnPoint in spawnPointLayer.objects) {
@@ -31,7 +67,9 @@ class Level extends World {
         }
       }
     }
+  }
 
+  void _addCollisions() {
     final collisionLayer = level.tileMap.getLayer<ObjectGroup>('collisions');
     if (collisionLayer != null) {
       for (var collision in collisionLayer.objects) {
@@ -56,6 +94,5 @@ class Level extends World {
       }
     }
     player.collisionBlocks = collisionBlocks;
-    return super.onLoad();
   }
 }
