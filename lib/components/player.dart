@@ -6,7 +6,7 @@ import 'package:pixel_adventure/components/collision_block.dart';
 import 'package:pixel_adventure/components/utils.dart';
 import 'package:pixel_adventure/pixel_adventure.dart';
 
-enum PlayerState { idle, running }
+enum PlayerState { idle, running, jumping, falling }
 
 class Player extends SpriteAnimationGroupComponent
     with HasGameRef<PixelAdventure>, KeyboardHandler {
@@ -16,6 +16,8 @@ class Player extends SpriteAnimationGroupComponent
 
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runningAnimation;
+  late final SpriteAnimation jumpingAnimation;
+  late final SpriteAnimation fallingAnimation;
   final double stepTime = 0.05;
 
   double gravity = 9.8;
@@ -25,6 +27,8 @@ class Player extends SpriteAnimationGroupComponent
   double movementSpeed = 100;
   Vector2 velocity = Vector2.zero();
   bool isOnGround = false;
+  bool hasJumped = false;
+
   List<CollisionBlock> collisionBlocks = [];
 
   @override
@@ -54,6 +58,8 @@ class Player extends SpriteAnimationGroupComponent
     horizontalMovment += isLeftKeyPressed ? -1 : 0;
     horizontalMovment += isRightKeyPressed ? 1 : 0;
 
+    hasJumped = keysPressed.contains(LogicalKeyboardKey.space);
+
     return super.onKeyEvent(event, keysPressed);
   }
 
@@ -61,11 +67,15 @@ class Player extends SpriteAnimationGroupComponent
   void _loadAllAnimations() {
     idleAnimation = _spriteAnimation('Idle', 11);
     runningAnimation = _spriteAnimation('Run', 12);
+    jumpingAnimation = _spriteAnimation('Jump', 1);
+    fallingAnimation = _spriteAnimation('Fall', 1);
 
     //List of animnations
     animations = {
       PlayerState.idle: idleAnimation,
       PlayerState.running: runningAnimation,
+      PlayerState.jumping: jumpingAnimation,
+      PlayerState.falling: fallingAnimation,
     };
 
     // Set current animation
@@ -85,6 +95,10 @@ class Player extends SpriteAnimationGroupComponent
   }
 
   void _updatePlayerMovement(double dt) {
+    if (hasJumped && isOnGround) _playerJump(dt);
+
+    if (velocity.y > gravity) isOnGround = false;
+
     velocity.x = horizontalMovment * movementSpeed;
     position.x += velocity.x * dt;
   }
@@ -102,7 +116,16 @@ class Player extends SpriteAnimationGroupComponent
       playerState = PlayerState.running;
     }
 
+    if (velocity.y > gravity) playerState = PlayerState.falling;
+
     current = playerState;
+  }
+
+  void _playerJump(double dt) {
+    velocity.y = -jumpForce;
+    position.y += velocity.y * dt;
+    isOnGround = false;
+    hasJumped = false;
   }
 
   void _checkHorizontalCollisions() {
@@ -133,7 +156,14 @@ class Player extends SpriteAnimationGroupComponent
   void _checkVerticalCollisions() {
     for (final block in collisionBlocks) {
       if (block.isPlatform) {
-//
+        if (checkCollision(this, block)) {
+          if (velocity.y > 0) {
+            velocity.y = 0;
+            position.y = block.y - height;
+            isOnGround = true;
+            break;
+          }
+        }
       } else {
         if (checkCollision(this, block)) {
           if (velocity.y > 0) {
