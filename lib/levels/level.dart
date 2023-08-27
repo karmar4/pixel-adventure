@@ -7,9 +7,12 @@ import 'package:pixel_adventure/actors/player.dart';
 class Level extends World {
   late TiledComponent level;
 
+  Level({required this.levelName});
+  final String levelName;
+
   @override
   FutureOr<void> onLoad() async {
-    level = await TiledComponent.load('level-01.tmx', Vector2.all(16));
+    level = await TiledComponent.load('$levelName.tmx', Vector2.all(16));
     add(level);
 
     final spawnPointLayer = level.tileMap.getLayer<ObjectGroup>('Spawnpoints');

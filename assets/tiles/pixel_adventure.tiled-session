@@ -7,6 +7,17 @@
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "level-01.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 1.1541,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 288.5365219651677,
+                "y": 220.95139069404732
+            }
+        }
     },
     "last.imagePath": "/Users/karmarbarrett/Development/projects/pixel_adventure/assets/images/Terrain",
     "map.height": 23,
