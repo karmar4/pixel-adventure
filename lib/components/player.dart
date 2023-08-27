@@ -1,15 +1,17 @@
 import 'dart:async';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
+import 'package:pixel_adventure/components/player_hitbox.dart';
 import 'package:pixel_adventure/components/utils.dart';
 import 'package:pixel_adventure/pixel_adventure.dart';
 
 enum PlayerState { idle, running, jumping, falling }
 
 class Player extends SpriteAnimationGroupComponent
-    with HasGameRef<PixelAdventure>, KeyboardHandler {
+    with KeyboardHandler, HasGameRef<PixelAdventure> {
   Player({position, this.mainCharacter = 'Pink Man'})
       : super(position: position);
   String mainCharacter;
@@ -31,13 +33,24 @@ class Player extends SpriteAnimationGroupComponent
 
   List<CollisionBlock> collisionBlocks = [];
 
+  PlayerHitbox hitbox = PlayerHitbox(
+    offsetX: 10,
+    offsetY: 4,
+    width: 14,
+    height: 28,
+  );
+
   @override
   FutureOr<void> onLoad() {
     _loadAllAnimations();
+    add(RectangleHitbox(
+        position: Vector2(hitbox.offsetX, hitbox.offsetY),
+        size: Vector2(hitbox.width, hitbox.height)));
     debugMode = true;
     return super.onLoad();
   }
 
+  @override
   void update(double dt) {
     _updatePlayerState();
     _updatePlayerMovement(dt);
@@ -47,18 +60,22 @@ class Player extends SpriteAnimationGroupComponent
     super.update(dt);
   }
 
+  @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     horizontalMovment = 0;
 
     final isLeftKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyA) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowLeft);
+        keysPressed.contains(LogicalKeyboardKey.arrowUp);
+    print(keysPressed.toString());
     final isRightKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyD) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowRight);
+        keysPressed.contains(LogicalKeyboardKey.arrowDown);
+    print(keysPressed.toString());
 
     horizontalMovment += isLeftKeyPressed ? -1 : 0;
     horizontalMovment += isRightKeyPressed ? 1 : 0;
 
     hasJumped = keysPressed.contains(LogicalKeyboardKey.space);
+    print(keysPressed.toString());
 
     return super.onKeyEvent(event, keysPressed);
   }
@@ -112,11 +129,11 @@ class Player extends SpriteAnimationGroupComponent
       flipHorizontallyAroundCenter();
     }
 
-    if (velocity.x > 0 || velocity.x < 0) {
-      playerState = PlayerState.running;
-    }
+    if (velocity.x > 0 || velocity.x < 0) playerState = PlayerState.running;
 
     if (velocity.y > gravity) playerState = PlayerState.falling;
+
+    if (velocity.y < 0) playerState = PlayerState.jumping;
 
     current = playerState;
   }
@@ -134,12 +151,12 @@ class Player extends SpriteAnimationGroupComponent
         if (checkCollision(this, block)) {
           if (velocity.x > 0) {
             velocity.x = 0;
-            position.x = block.x - width;
+            position.x = block.x - hitbox.offsetX - hitbox.width;
             break;
           }
           if (velocity.x < 0) {
             velocity.x = 0;
-            position.x = block.x + block.width + width;
+            position.x = block.x + block.width + hitbox.offsetX + hitbox.width;
             break;
           }
         }
@@ -159,7 +176,7 @@ class Player extends SpriteAnimationGroupComponent
         if (checkCollision(this, block)) {
           if (velocity.y > 0) {
             velocity.y = 0;
-            position.y = block.y - height;
+            position.y = block.y - hitbox.height - hitbox.offsetY;
             isOnGround = true;
             break;
           }
@@ -168,13 +185,13 @@ class Player extends SpriteAnimationGroupComponent
         if (checkCollision(this, block)) {
           if (velocity.y > 0) {
             velocity.y = 0;
-            position.y = block.y - height;
+            position.y = block.y - hitbox.height - hitbox.offsetY;
             isOnGround = true;
             break;
           }
           if (velocity.y < 0) {
             velocity.y = 0;
-            position.y = block.y + block.height;
+            position.y = block.y + block.height - hitbox.offsetY;
           }
         }
       }
