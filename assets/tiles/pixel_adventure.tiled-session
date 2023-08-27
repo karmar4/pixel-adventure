@@ -12,10 +12,22 @@
                 3
             ],
             "scale": 1.1541,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 288.5365219651677,
-                "y": 220.95139069404732
+                "x": 179.36054068105017,
+                "y": 213.58634433757913
+            }
+        },
+        "level-02.tmx": {
+            "expandedObjectLayers": [
+                3,
+                4
+            ],
+            "scale": 1.1899,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 332.80107572064884,
+                "y": 175.22480880746286
             }
         }
     },

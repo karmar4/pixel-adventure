@@ -6,8 +6,8 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:pixel_adventure/actors/player.dart';
-import 'package:pixel_adventure/levels/level.dart';
+import 'package:pixel_adventure/components/player.dart';
+import 'package:pixel_adventure/components/level.dart';
 
 class PixelAdventure extends FlameGame
     with HasKeyboardHandlerComponents, DragCallbacks {
@@ -24,7 +24,7 @@ class PixelAdventure extends FlameGame
     await images.loadAllImages();
 
     final world = Level(
-      levelName: 'level-01',
+      levelName: 'level-02',
       player: player,
     );
 
@@ -69,15 +69,15 @@ class PixelAdventure extends FlameGame
       case JoystickDirection.left:
       case JoystickDirection.upLeft:
       case JoystickDirection.downLeft:
-        player.playerDirection = PlayerDirection.left;
+        player.horizontalMovment = -1;
         break;
       case JoystickDirection.right:
       case JoystickDirection.upRight:
       case JoystickDirection.downRight:
-        player.playerDirection = PlayerDirection.right;
+        player.horizontalMovment = 1;
         break;
       default:
-        player.playerDirection = PlayerDirection.none;
+        player.horizontalMovment = 0;
         break;
     }
   }
