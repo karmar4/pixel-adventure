@@ -66,8 +66,8 @@ class Player extends SpriteAnimationGroupComponent
       _checkHorizontalCollisions();
       _applyGravity(dt);
       _checkVerticalCollisions();
-      super.update(dt);
     }
+    super.update(dt);
   }
 
   @override
@@ -237,12 +237,12 @@ class Player extends SpriteAnimationGroupComponent
       scale.x = 1;
       position = startingPosition - Vector2.all((96 - 64));
       current = PlayerState.appearing;
-      // Future.delayed(appearingDuration, () {
-      //   velocity = Vector2.zero();
-      //   position = startingPosition;
-      //   _updatePlayerState();
-      //   Future.delayed(Duration(milliseconds: 400), () => gotHit = false);
-      // });
+      Future.delayed(appearingDuration, () {
+        velocity = Vector2.zero();
+        position = startingPosition;
+        _updatePlayerState();
+        Future.delayed(Duration(milliseconds: 400), () => gotHit = false);
+      });
     });
   }
 }
