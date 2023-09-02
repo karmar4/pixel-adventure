@@ -241,6 +241,7 @@ class Player extends SpriteAnimationGroupComponent
         velocity = Vector2.zero();
         position = startingPosition;
         _updatePlayerState();
+        // delay so we dont cant move straight away
         Future.delayed(Duration(milliseconds: 400), () => gotHit = false);
       });
     });
