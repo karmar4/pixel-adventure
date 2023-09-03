@@ -14,8 +14,8 @@ class Level extends World with HasGameRef<PixelAdventure> {
   late TiledComponent level;
 
   Level({required this.levelName, required this.player});
-  final String levelName;
-  final Player player;
+  String levelName;
+  Player player;
 
   List<CollisionBlock> collisionBlocks = [];
 
@@ -59,8 +59,9 @@ class Level extends World with HasGameRef<PixelAdventure> {
 
   void _spawingObjects() {
     final spawnPointLayer = level.tileMap.getLayer<ObjectGroup>('spawnpoints');
+
     if (spawnPointLayer != null) {
-      for (var spawnPoint in spawnPointLayer.objects) {
+      for (final spawnPoint in spawnPointLayer.objects) {
         switch (spawnPoint.class_) {
           case 'Player':
             player.position = Vector2(spawnPoint.x, spawnPoint.y);
