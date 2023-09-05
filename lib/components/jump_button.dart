@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
+import 'package:pixel_adventure/pixel_adventure.dart';
 
-class JumpButton extends SpriteComponent with HasGameRef {
+class JumpButton extends SpriteComponent
+    with HasGameRef<PixelAdventure>, TapCallbacks {
   JumpButton();
 
   @override
@@ -16,5 +19,17 @@ class JumpButton extends SpriteComponent with HasGameRef {
     priority = 10;
 
     return super.onLoad();
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) {
+    game.player.hasJumped = true;
+    super.onTapDown(event);
+  }
+
+  @override
+  void onTapUp(TapUpEvent event) {
+    game.player.hasJumped = false;
+    super.onTapUp(event);
   }
 }
