@@ -6,6 +6,7 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:pixel_adventure/components/jump_button.dart';
 import 'package:pixel_adventure/components/player.dart';
 import 'package:pixel_adventure/components/level.dart';
 
@@ -16,7 +17,7 @@ class PixelAdventure extends FlameGame
   late CameraComponent cam;
   Player player = Player(mainCharacter: 'Mask Dude');
   late JoystickComponent joyStick;
-  bool showJoystick = false;
+  bool showJControls = true;
   List<String> levelNames = ['level-01', 'level-02'];
   int currentLvlIndex = 0;
 
@@ -27,8 +28,9 @@ class PixelAdventure extends FlameGame
 
     _loadLevel();
 
-    if (showJoystick) {
+    if (showJControls) {
       addJoyStick();
+      add(JumpButton());
     }
 
     return super.onLoad();
@@ -36,7 +38,7 @@ class PixelAdventure extends FlameGame
 
   @override
   void update(double dt) {
-    if (showJoystick) {
+    if (showJControls) {
       updateJoystick();
     }
     super.update(dt);
@@ -44,6 +46,7 @@ class PixelAdventure extends FlameGame
 
   void addJoyStick() {
     joyStick = JoystickComponent(
+        priority: 10,
         knob: SpriteComponent(
           sprite: Sprite(
             images.fromCache('HUD/knob.png'),
